@@ -28,8 +28,12 @@ function breadcrumb(url, sitemap_json)
 
 	$.each(sitemap_json, function(key, val) { recursiveFunction(key, val, level, url); })
 
-	function recursiveFunction(key, val, level, searchUrl) {
+	function recursiveFunction(key, val, level, searchUrl)
+	{
+		var matched = false;
+
 		/* console.log("#" + level + " " + key + " => " + val); */
+
 		if(key == 'page')
 		{
 			level = level + 1;
@@ -45,13 +49,37 @@ function breadcrumb(url, sitemap_json)
 				/* console.log("cache" + level + " " + val['name'] + " => " + val['url']); */
 
 				/* if(RegExp(val['url']).test(searchUrl)) */
-				if(RegExp(val['url'].replace('?', '\\?')).test(searchUrl))
+				if(/[(\.\*)(\\d)]/.test(val['url']))
 				{
-					breadcrumb['name'] = tmp_breadcrumb_name.slice(1, level+1);
-					breadcrumb['url'] = tmp_breadcrumb_url.slice(1, level+1);
+					if(RegExp(val['url'].replace('?', '\\?')).test(searchUrl))
+					{
+						breadcrumb['name'] = tmp_breadcrumb_name.slice(1, level+1);
+						breadcrumb['url'] = tmp_breadcrumb_url.slice(1, level+1);
+
+						matched = true;
+					}
+				}
+				else
+				{
+					if(val['url'] == searchUrl)
+					{
+						breadcrumb['name'] = tmp_breadcrumb_name.slice(1, level+1);
+						breadcrumb['url'] = tmp_breadcrumb_url.slice(1, level+1);
+
+						matched = true;
+					}
+
 				}
 			}
-			$.each(val, function(key, val) { recursiveFunction(key, val, level, searchUrl); });
+
+			if(matched)
+			{
+				return matched;
+			}
+			else
+			{
+				$.each(val, function(key, val) { recursiveFunction(key, val, level, searchUrl); });
+			}
 		}
 	}
 
