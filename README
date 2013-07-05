@@ -1,0 +1,22 @@
+standard mode :
+
+<head>
+	<script type="text/javascript" src="js/breadcrumb/breadcrumb.js"></script>
+	<script>
+	        $(function(){
+	                $('.breadcrumb').render({ sitemapUrl: '/index.php?c=Default&a=Sitemap', sitemapType: 'json', urlMode: 'standard'});
+	        });
+	</script>
+</head>
+
+
+rewrite mode :
+
+<head>
+	<script type="text/javascript" src="js/breadcrumb/breadcrumb.js"></script>
+	<script>
+	        $(function(){
+	                $('.breadcrumb').render({ sitemapUrl: '/sitemap/json', sitemapType: 'json', urlMode: 'rewrite'});
+	        });
+	</script>
+</head>
