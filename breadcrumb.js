@@ -1,116 +1,6 @@
 /*
-    Auto render to <ul class="breadcrumb">...</ul>
+    javascript sitemap render 
 */
-
-/*
-open http://www.utilities-online.info/xmltojson/#.UdQlDFOhWoS
-
-<?xml version="1.0" encoding="UTF-8" ?>
-	<site>
-		<page>
-			<name>top</name>
-			<url>/</url>
-			<page>
-				<name>bulletin</name>
-				<url>/bulletin</url>
-				<page>
-					<name>edit</name>
-					<url>/bulletin/edit/.*</url>
-				</page>
-			</page>
-		</page>
-		<page>
-			<name>admin</name>
-			<url>/admin</url>
-			<page>
-				<name>user</name>
-				<url>/user</url>
-				<page>
-					<name>add</name>
-					<url>/user/add/.*</url>
-				</page>
-				<page>
-					<name>edit</name>
-					<url>/user/edit/.*</url>
-				</page>
-			</page>
-			<page>
-				<name>role</name>
-				<url>/role</url>
-				<page>
-					<name>add</name>
-					<url>/role/add/.*</url>
-				</page>
-				<page>
-					<name>edit</name>
-					<url>/role/edit/.*</url>
-				</page>
-			</page>
-		</page>
-	</site>
-*/
-
-
-sitemap = '\
-{\
-  "site": {\
-    "page": [\
-      {\
-        "name": "首頁",\
-        "url": "/",\
-        "page": {\
-          "name": "佈告欄",\
-          "url": "/bulletin",\
-	  "page": [\
-	  {\
-            "name": "新增文章",\
-            "url": "/bulletin/add"\
-          },\
-	  {\
-            "name": "修改文章",\
-            "url": "/bulletin/edit/.*"\
-          }\
-	  ]\
-        }\
-      },\
-      {\
-        "name": "admin",\
-        "url": "/admin",\
-        "page": [\
-          {\
-            "name": "user",\
-            "url": "/user",\
-            "page": [\
-              {\
-                "name": "add",\
-                "url": "/user/add/.*"\
-              },\
-              {\
-                "name": "edit",\
-                "url": "/user/edit/.*"\
-              }\
-            ]\
-          },\
-          {\
-            "name": "role",\
-            "url": "/role",\
-            "page": [\
-              {\
-                "name": "add",\
-                "url": "/role/add/.*"\
-              },\
-              {\
-                "name": "edit",\
-                "url": "/role/edit/.*"\
-              }\
-            ]\
-          }\
-        ]\
-      }\
-    ]\
-  }\
-}\
-';
 
     
 function jsonRead(url)
@@ -154,7 +44,8 @@ function breadcrumb(url, sitemap_json)
 
 				/* console.log("cache" + level + " " + val['name'] + " => " + val['url']); */
 
-				if(RegExp(val['url']).test(searchUrl))
+				/* if(RegExp(val['url']).test(searchUrl)) */
+				if(RegExp(val['url'].replace('?', '\\?')).test(searchUrl))
 				{
 					breadcrumb['name'] = tmp_breadcrumb_name.slice(1, level+1);
 					breadcrumb['url'] = tmp_breadcrumb_url.slice(1, level+1);
@@ -168,12 +59,39 @@ function breadcrumb(url, sitemap_json)
 }
 
 
-$(function(){
-	// sitemap_json = $.parseJSON(sitemap);
-	sitemap_json = jsonRead("/sitemap.json");
+$.fn.render = function(options) {                                                                                   
 
-	breadcrumb = breadcrumb(window.location.pathname, sitemap_json);
+	var settings = jQuery.extend({
+		sitemapUrl: '/sitemap',
+		sitemapType: 'json',
+		urlMode: 'standard'
+		}, options || {});
 
+
+	// read and parse sitemap
+	if(settings.sitemapType == 'json')
+	{
+		sitemap = jsonRead(settings.sitemapUrl);
+	}
+
+	// current url type
+	if(settings.urlMode == 'standard')
+	{
+		// "?c=News&a=Detail&id=4"
+		currentUrl = window.location.search
+	}
+	else if(settings.urlMode == 'rewrite')
+	{
+		// "/news/4"
+		currentUrl = window.location.pathname
+	}
+
+
+	// sitemap to breadcrumb
+	breadcrumb = breadcrumb(currentUrl, sitemap);
+
+
+	// breadcrumb to html (bootstrap style)
 	bar = "";
 
 	$.each(breadcrumb['name'], function(key, val) {
@@ -187,5 +105,9 @@ $(function(){
 		}
 	});
 
-	$(".breadcrumb").html(bar);
-});
+
+	// render html
+	var div = $(this);
+
+	div.html(bar);
+}
