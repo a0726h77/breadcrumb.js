@@ -1,0 +1,18 @@
+site:
+    page:
+        name: Home
+        url: "/"
+        page:
+            - name: Admin
+              url: "/admin"
+              page:
+                   - name: Users
+                     url: "/user"
+                     page:
+                         - { name: Add, url: "/user/add" }
+                         - { name: Edit, url: "/user/edit/.*" }
+                   - name: News
+                     url: "/news"
+                     page:
+                         - { name: Add, url: "/news/add" }
+                         - { name: Edit, url: "/news/edit/.*" }
