@@ -25,13 +25,18 @@ function breadcrumb(url, sitemap_json)
 	var tmp_breadcrumb_name = [];
 	var tmp_breadcrumb_url = [];
 	var breadcrumb = [];
+	var matched = false;
 
-	$.each(sitemap_json, function(key, val) { recursiveFunction(key, val, level, url); })
+	$.each(sitemap_json, function(key, val) {
+		matched = recursiveFunction(key, val, level, url);
+		if(matched)
+		{
+			return;
+		}
+	})
 
 	function recursiveFunction(key, val, level, searchUrl)
 	{
-		var matched = false;
-
 		/* console.log("#" + level + " " + key + " => " + val); */
 
 		if(key == 'page')
