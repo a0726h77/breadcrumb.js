@@ -54,7 +54,7 @@ function breadcrumb(url, sitemap_json)
 				/* console.log("cache" + level + " " + val['name'] + " => " + val['url']); */
 
 				/* if(RegExp(val['url']).test(searchUrl)) */
-				if(/[(\.\*)(\\d)]/.test(val['url']))
+				if(val['url'].split('/').length == searchUrl.split('/').length && /[(\.\*)(\\d)]/.test(val['url']))
 				{
 					if(RegExp(val['url'].replace('?', '\\?')).test(searchUrl))
 					{
